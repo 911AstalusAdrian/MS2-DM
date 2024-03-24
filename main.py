@@ -2,12 +2,16 @@ from api_work import race_results
 
 if __name__ == '__main__':
 
-    for season in range(2020, 2023):
+    race_id = 1
+    results_list = []
+    for season in range(2015, 2023):
         races = int(race_results.get_races_number(season))
-        print(f'{season} - {races}')
         for race in range(1, races + 1):
-            race_name = race_results.get_race_name(season, race)
-            race_date = race_results.get_race_winner(season, race)
-            print(f'\t{race} - {race_name}')
-            print(f'\t\t{race_date}')
+            race_name = race_results.get_race_name_API(season, race)
+            print(f'{season} - {race_name}')
+            race_results.get_race_results(season, race, race_id, results_list)
+            race_id += 1
 
+    for result in results_list:
+        print(result)
+    # print(results_list)
