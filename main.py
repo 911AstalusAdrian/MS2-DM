@@ -1,7 +1,11 @@
+import numpy as np
+import pandas as pd
 from api_work import race_results
+# import pandas as pd
+from quali_performance import QualiPerformance
 
-if __name__ == '__main__':
 
+def extras():
     race_id = 1
     results_list = []
     for season in range(2015, 2023):
@@ -14,4 +18,11 @@ if __name__ == '__main__':
 
     for result in results_list:
         print(result)
-    # print(results_list)
+    print(results_list)
+
+
+if __name__ == '__main__':
+    quali_csv = './csv_files/qualifying.csv'
+    quali_data = QualiPerformance(quali_csv)
+
+    # print(quali_data.get_top20())
