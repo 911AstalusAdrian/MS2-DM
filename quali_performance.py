@@ -53,9 +53,15 @@ class QualiPerformance():
                    .apply(apply_percentages))
         self.__df = grouped.reset_index().drop(['level_0', 'level_1'], axis=1)
 
-        # Group data by driverId and compute the mean qualifying percentage for each driver
-        self.__final_df = self.__df.groupby('driverId')['qual_percentage'].mean().reset_index()
-        self.__final_df.columns = ['driverId', 'avg_qual']
+        # Group data by driverId and compute the mean qualifying percentage and average position for each driver
+        self.__final_df = self.__df.groupby('driverId').agg({
+            'qual_percentage': 'mean',
+            'position': 'mean'
+        }).reset_index()
+        self.__final_df.columns = ['driverId', 'avg_qual', 'avg_pos']
+
+        rows_to_drop = self.__final_df[self.__final_df['avg_qual'] > 120].index
+        self.__final_df = self.__final_df.drop(rows_to_drop)
 
     def get_final_df(self):
         return self.__final_df

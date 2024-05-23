@@ -1,7 +1,9 @@
 from api_work import race_results
 from quali_performance import QualiPerformance
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
+import plotly.express as px
 
 
 def extras():
@@ -30,12 +32,45 @@ if __name__ == '__main__':
     drivers_csv = './csv_files/drivers.csv'
 
     clusters = KMeans(n_clusters=3, random_state=42)
+    scaler = MinMaxScaler()
 
     quali_data = QualiPerformance(quali_csv)
     driver_data = pd.read_csv(drivers_csv)
     final_data = merge_df(quali_data.get_final_df(), driver_data)
 
-    final_data['cluster'] = clusters.fit_predict(final_data['avg_qual'])
+    # final_data['qual_normalized'] = scaler.fit_transform(final_data[['avg_qual']])
+    final_data['cluster'] = clusters.fit_predict(final_data[['avg_qual', 'avg_pos']])
 
-    print(final_data)
+    # print(final_data)
+
+    fig = px.scatter(
+        final_data,
+        x='avg_pos',
+        y='avg_qual',
+        color='cluster',
+        hover_data=['driverRef', 'avg_qual', 'avg_pos'],
+        labels={
+            'avg_pos' : 'Average qualifying position',
+            'avg_qual' : 'Average qualifying percentage'
+        },
+        title='Driver clustering based on average quali position and quali percentage',
+    )
+    fig.show()
+
+
+    # plt.figure(figsize=(10, 6))
+    # colors = ['red', 'green', 'orange']
+    # for cluster in range(3):
+    #     clustered_data = final_data[final_data['cluster'] == cluster]
+    #     plt.scatter(clustered_data['avg_pos'], clustered_data['avg_qual'],
+    #                 label=f'Cluster {cluster}', color=colors[cluster])
+    #
+    # plt.xlabel('Average quali position')
+    # plt.ylabel('Average quali percentage')
+    # plt.title('')
+    # plt.legend()
+    # plt.grid(True)
+    # plt.show()
+
+    # print(final_data)
     # print(quali_data.get_top20())
