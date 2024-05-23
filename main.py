@@ -1,8 +1,7 @@
-import numpy as np
-import pandas as pd
 from api_work import race_results
-# import pandas as pd
 from quali_performance import QualiPerformance
+from sklearn.cluster import KMeans
+import pandas as pd
 
 
 def extras():
@@ -21,8 +20,22 @@ def extras():
     print(results_list)
 
 
+def merge_df(quali_df, drivers_df):
+    drivers_selected = drivers_df[['driverId', 'driverRef', 'code']]
+    return pd.merge(quali_df, drivers_selected, on='driverId', how='inner')
+
+
 if __name__ == '__main__':
     quali_csv = './csv_files/qualifying.csv'
-    quali_data = QualiPerformance(quali_csv)
+    drivers_csv = './csv_files/drivers.csv'
 
+    clusters = KMeans(n_clusters=3, random_state=42)
+
+    quali_data = QualiPerformance(quali_csv)
+    driver_data = pd.read_csv(drivers_csv)
+    final_data = merge_df(quali_data.get_final_df(), driver_data)
+
+    final_data['cluster'] = clusters.fit_predict(final_data['avg_qual'])
+
+    print(final_data)
     # print(quali_data.get_top20())

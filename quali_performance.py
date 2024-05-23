@@ -14,16 +14,19 @@ def convert_to_millis(laptime):
             return total_milliseconds
     return np.nan
 
+
 def apply_percentages(group):
     min_best_q = group['best_q'].min()
 
     group['qual_percentage'] = (group['best_q'] * 100) / min_best_q
     return group
 
+
 class QualiPerformance():
     def __init__(self, filename):
         self.__fn = filename
         self.__df = self.__read_filename()
+        self.__final_df = None
         self.__format_df()
 
     def __read_filename(self):
@@ -41,14 +44,21 @@ class QualiPerformance():
         self.__df['best_q'] = self.__df[['q1_millis', 'q2_millis', 'q3_millis']].min(axis=1)
 
         # Drop irrelevant columns
-        self.__df = self.__df.drop(['constructorId', 'number', 'q1', 'q2', 'q3', 'q1_millis', 'q2_millis', 'q3_millis'], axis=1)
+        self.__df = self.__df.drop(['constructorId', 'number', 'q1', 'q2', 'q3', 'q1_millis', 'q2_millis', 'q3_millis'],
+                                   axis=1)
 
+        # Group data by raceId and compute qualifying percentages per race, then ungroup
+        grouped = (self.__df
+                   .groupby('raceId', as_index=False)
+                   .apply(apply_percentages))
+        self.__df = grouped.reset_index().drop(['level_0', 'level_1'], axis=1)
 
-        grouped = self.__df.groupby('raceId', as_index=False).apply(apply_percentages)
-        print(grouped)
+        # Group data by driverId and compute the mean qualifying percentage for each driver
+        self.__final_df = self.__df.groupby('driverId')['qual_percentage'].mean().reset_index()
+        self.__final_df.columns = ['driverId', 'avg_qual']
 
-        noidx = grouped.reset_index()
-        print(noidx)
+    def get_final_df(self):
+        return self.__final_df
 
     def get_top20(self):
         return self.__df.head(20)
