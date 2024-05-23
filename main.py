@@ -40,8 +40,14 @@ if __name__ == '__main__':
 
     # final_data['qual_normalized'] = scaler.fit_transform(final_data[['avg_qual']])
     final_data['cluster'] = clusters.fit_predict(final_data[['avg_qual', 'avg_pos']])
-
+    final_data['cluster'] = final_data['cluster'].astype(str)
     # print(final_data)
+
+    labels = {
+        0: 'Poor Qualifier',
+        1: 'Great Qualifier',
+        2: 'Average Qualifier'
+    }
 
     fig = px.scatter(
         final_data,
@@ -50,13 +56,15 @@ if __name__ == '__main__':
         color='cluster',
         hover_data=['driverRef', 'avg_qual', 'avg_pos'],
         labels={
-            'avg_pos' : 'Average qualifying position',
-            'avg_qual' : 'Average qualifying percentage'
+            'avg_pos': 'Average qualifying position',
+            'avg_qual': 'Average qualifying percentage'
         },
         title='Driver clustering based on average quali position and quali percentage',
     )
-    fig.show()
+    for i, label in labels.items():
+        fig.for_each_trace(lambda trace: trace.update(name=label) if trace.name == str(i) else ())
 
+    fig.show()
 
     # plt.figure(figsize=(10, 6))
     # colors = ['red', 'green', 'orange']
