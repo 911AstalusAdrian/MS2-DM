@@ -65,20 +65,3 @@ if __name__ == '__main__':
         fig.for_each_trace(lambda trace: trace.update(name=label) if trace.name == str(i) else ())
 
     fig.show()
-
-    # plt.figure(figsize=(10, 6))
-    # colors = ['red', 'green', 'orange']
-    # for cluster in range(3):
-    #     clustered_data = final_data[final_data['cluster'] == cluster]
-    #     plt.scatter(clustered_data['avg_pos'], clustered_data['avg_qual'],
-    #                 label=f'Cluster {cluster}', color=colors[cluster])
-    #
-    # plt.xlabel('Average quali position')
-    # plt.ylabel('Average quali percentage')
-    # plt.title('')
-    # plt.legend()
-    # plt.grid(True)
-    # plt.show()
-
-    # print(final_data)
-    # print(quali_data.get_top20())
